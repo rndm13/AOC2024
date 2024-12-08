@@ -45,18 +45,6 @@ uint64_t solve_p1(Equation *equations, size_t equation_count) {
                 break;
             }
         }
-
-        // {
-        //     size_t pow_2 = 1;
-        //     for (int32_t i = 0; i < eq->number_count - 1; i++) {
-        //         for (int32_t j = 0; j < pow_2; j++) {
-        //             printf("%d %d ", eq_matrix[i][j * 2 + 0], eq_matrix[i][j * 2 + 1]);
-        //         }
-        //         printf("\n");
-        //         pow_2 *= 2;
-        //     }
-        //     printf("\n\n");
-        // }
     }
 
     for (int32_t i = 0; i < EQ_MATRIX_ROW_COUNT; i++) {
@@ -110,18 +98,6 @@ uint64_t solve_p2(Equation *equations, size_t equation_count) {
                 break;
             }
         }
-
-        // {
-        //     size_t pow_3 = 1;
-        //     for (int32_t i = 0; i < eq->number_count - 1; i++) {
-        //         for (int32_t j = 0; j < pow_3; j++) {
-        //             printf("%zu %zu %zu ", eq_matrix[i][j * 3 + 0], eq_matrix[i][j * 3 + 1], eq_matrix[i][j * 3 + 2]);
-        //         }
-        //         printf("\n");
-        //         pow_3 *= 3;
-        //     }
-        //     printf("\n\n");
-        // }
     }
 
     for (int32_t i = 0; i < EQ_MATRIX_ROW_COUNT; i++) {
