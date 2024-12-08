@@ -15,7 +15,7 @@ typedef struct Point {
 typedef struct VecPoint {
     size_t size;
     size_t capacity;
-    Point* data;
+    Point *data;
 } VecPoint;
 
 int main(int argc, char *argv[]) {
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
                 Point p = {
                     .x = i,
                     .y = j,
-                }; 
+                };
 
                 push_vec(antennas[map[i][j]], &p, 1);
             }
@@ -78,13 +78,13 @@ int main(int argc, char *argv[]) {
                     .y = 2 * antenna_points->data[j].y - antenna_points->data[i].y,
                 };
 
-                if (IN_BOUNDS(n1) && !hash_table_get(&antinodes, *(int32_t*)&n1)) {
-                    hash_table_set(&antinodes, *(int32_t*)&n1, 1);
+                if (IN_BOUNDS(n1) && !hash_table_get(&antinodes, *(int32_t *)&n1)) {
+                    hash_table_set(&antinodes, *(int32_t *)&n1, 1);
                     antinode_count++;
                 }
 
-                if (IN_BOUNDS(n2) && !hash_table_get(&antinodes, *(int32_t*)&n2)) {
-                    hash_table_set(&antinodes, *(int32_t*)&n2, 1);
+                if (IN_BOUNDS(n2) && !hash_table_get(&antinodes, *(int32_t *)&n2)) {
+                    hash_table_set(&antinodes, *(int32_t *)&n2, 1);
                     antinode_count++;
                 }
             }
@@ -92,6 +92,50 @@ int main(int argc, char *argv[]) {
     }
 
     printf("PART 1: %zu\n", antinode_count);
+
+    hash_table_clear(&antinodes);
+    antinode_count = 0;
+
+    for (int32_t c = 0; c < ANTENNA_COUNT; c++) {
+        if (antennas[c].data == NULL) {
+            continue;
+        }
+
+        VecPoint *antenna_points = &antennas[c];
+
+        for (int32_t i = 0; i < antenna_points->size; i++) {
+            for (int32_t j = i + 1; j < antenna_points->size; j++) {
+                Point diff1 = {
+                    .x = antenna_points->data[i].x - antenna_points->data[j].x,
+                    .y = antenna_points->data[i].y - antenna_points->data[j].y,
+                };
+                Point n1 = antenna_points->data[i];
+                while (IN_BOUNDS(n1)) {
+                    if (!hash_table_get(&antinodes, *(int32_t *)&n1)) {
+                        hash_table_set(&antinodes, *(int32_t *)&n1, 1);
+                        antinode_count++;
+                    }
+                    n1.x += diff1.x;
+                    n1.y += diff1.y;
+                }
+
+                Point diff2 = {
+                    .x = antenna_points->data[j].x - antenna_points->data[i].x,
+                    .y = antenna_points->data[j].y - antenna_points->data[i].y,
+                };
+                Point n2 = antenna_points->data[j];
+                while (IN_BOUNDS(n2)) {
+                    if (!hash_table_get(&antinodes, *(int32_t *)&n2)) {
+                        hash_table_set(&antinodes, *(int32_t *)&n2, 1);
+                        antinode_count++;
+                    }
+                    n2.x += diff2.x;
+                    n2.y += diff2.y;
+                }
+            }
+        }
+    }
+    printf("PART 2: %zu\n", antinode_count);
 
     hash_table_deinit(&antinodes);
     for (int32_t i = 0; i < ANTENNA_COUNT; i++) {
