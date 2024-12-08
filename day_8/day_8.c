@@ -18,6 +18,65 @@ typedef struct VecPoint {
     Point *data;
 } VecPoint;
 
+#define IN_BOUNDS(p) \
+    (p.x >= 0 && p.x < row_count && p.y >= 0 && p.y < col_count)
+
+size_t count_antinodes(VecPoint* antennas, size_t row_count, size_t col_count, size_t start_diff, size_t diff_count) {
+    hash_table antinodes;
+    hash_table_init(&antinodes);
+
+    size_t antinode_count = 0;
+    for (int32_t c = 0; c < ANTENNA_COUNT; c++) {
+        if (antennas[c].data == NULL) {
+            continue;
+        }
+
+        VecPoint *antenna_points = &antennas[c];
+
+        for (int32_t i = 0; i < antenna_points->size; i++) {
+            for (int32_t j = i + 1; j < antenna_points->size; j++) {
+                Point diff1 = {
+                    .x = antenna_points->data[i].x - antenna_points->data[j].x,
+                    .y = antenna_points->data[i].y - antenna_points->data[j].y,
+                };
+                Point n1 = antenna_points->data[i];
+                n1.x += diff1.x * start_diff;
+                n1.y += diff1.y * start_diff;
+
+                for (size_t it = 0; it < diff_count && IN_BOUNDS(n1); it++) {
+                    if (!hash_table_get(&antinodes, *(int32_t *)&n1)) {
+                        hash_table_set(&antinodes, *(int32_t *)&n1, 1);
+                        antinode_count++;
+                    }
+                    n1.x += diff1.x;
+                    n1.y += diff1.y;
+                }
+
+                Point diff2 = {
+                    .x = antenna_points->data[j].x - antenna_points->data[i].x,
+                    .y = antenna_points->data[j].y - antenna_points->data[i].y,
+                };
+                Point n2 = antenna_points->data[j];
+                n2.x += diff2.x * start_diff;
+                n2.y += diff2.y * start_diff;
+
+                for (size_t it = 0; it < diff_count && IN_BOUNDS(n2); it++) {
+                    if (!hash_table_get(&antinodes, *(int32_t *)&n2)) {
+                        hash_table_set(&antinodes, *(int32_t *)&n2, 1);
+                        antinode_count++;
+                    }
+                    n2.x += diff2.x;
+                    n2.y += diff2.y;
+                }
+            }
+        }
+    }
+
+    hash_table_deinit(&antinodes);
+
+    return antinode_count;
+}
+
 int main(int argc, char *argv[]) {
     FILE *file = stdin;
     if (argc > 1) {
@@ -53,91 +112,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-#define IN_BOUNDS(p) \
-    (p.x >= 0 && p.x < row_count && p.y >= 0 && p.y < col_count)
+    printf("PART 1: %zu\n", count_antinodes(antennas, row_count, col_count, 1, 1));
+    printf("PART 2: %zu\n", count_antinodes(antennas, row_count, col_count, 0, -1));
 
-    hash_table antinodes;
-    hash_table_init(&antinodes);
-
-    size_t antinode_count = 0;
-    for (int32_t c = 0; c < ANTENNA_COUNT; c++) {
-        if (antennas[c].data == NULL) {
-            continue;
-        }
-
-        VecPoint *antenna_points = &antennas[c];
-
-        for (int32_t i = 0; i < antenna_points->size; i++) {
-            for (int32_t j = i + 1; j < antenna_points->size; j++) {
-                Point n1 = {
-                    .x = 2 * antenna_points->data[i].x - antenna_points->data[j].x,
-                    .y = 2 * antenna_points->data[i].y - antenna_points->data[j].y,
-                };
-                Point n2 = {
-                    .x = 2 * antenna_points->data[j].x - antenna_points->data[i].x,
-                    .y = 2 * antenna_points->data[j].y - antenna_points->data[i].y,
-                };
-
-                if (IN_BOUNDS(n1) && !hash_table_get(&antinodes, *(int32_t *)&n1)) {
-                    hash_table_set(&antinodes, *(int32_t *)&n1, 1);
-                    antinode_count++;
-                }
-
-                if (IN_BOUNDS(n2) && !hash_table_get(&antinodes, *(int32_t *)&n2)) {
-                    hash_table_set(&antinodes, *(int32_t *)&n2, 1);
-                    antinode_count++;
-                }
-            }
-        }
-    }
-
-    printf("PART 1: %zu\n", antinode_count);
-
-    hash_table_clear(&antinodes);
-    antinode_count = 0;
-
-    for (int32_t c = 0; c < ANTENNA_COUNT; c++) {
-        if (antennas[c].data == NULL) {
-            continue;
-        }
-
-        VecPoint *antenna_points = &antennas[c];
-
-        for (int32_t i = 0; i < antenna_points->size; i++) {
-            for (int32_t j = i + 1; j < antenna_points->size; j++) {
-                Point diff1 = {
-                    .x = antenna_points->data[i].x - antenna_points->data[j].x,
-                    .y = antenna_points->data[i].y - antenna_points->data[j].y,
-                };
-                Point n1 = antenna_points->data[i];
-                while (IN_BOUNDS(n1)) {
-                    if (!hash_table_get(&antinodes, *(int32_t *)&n1)) {
-                        hash_table_set(&antinodes, *(int32_t *)&n1, 1);
-                        antinode_count++;
-                    }
-                    n1.x += diff1.x;
-                    n1.y += diff1.y;
-                }
-
-                Point diff2 = {
-                    .x = antenna_points->data[j].x - antenna_points->data[i].x,
-                    .y = antenna_points->data[j].y - antenna_points->data[i].y,
-                };
-                Point n2 = antenna_points->data[j];
-                while (IN_BOUNDS(n2)) {
-                    if (!hash_table_get(&antinodes, *(int32_t *)&n2)) {
-                        hash_table_set(&antinodes, *(int32_t *)&n2, 1);
-                        antinode_count++;
-                    }
-                    n2.x += diff2.x;
-                    n2.y += diff2.y;
-                }
-            }
-        }
-    }
-    printf("PART 2: %zu\n", antinode_count);
-
-    hash_table_deinit(&antinodes);
     for (int32_t i = 0; i < ANTENNA_COUNT; i++) {
         free(antennas[i].data);
     }
