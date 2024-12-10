@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +74,7 @@ int main(int argc, char *argv[]) {
     // int block = 0b00100011;
     // int guard = 0b01011110;
 
-    hash_table alt_points;
+    HashTable alt_points;
     hash_table_init(&alt_points);
 
     while (IN_BOUNDS(guard_pos)) {

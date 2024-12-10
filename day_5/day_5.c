@@ -10,8 +10,8 @@
 
 int main(int32_t argc, char *argv[]) {
     // [any number][cannot be after that number]
-    vec_i32 rules[MAX_PAGE];
-    vec_i32 page_lists[MAX_PAGE_LIST_COUNT];
+    VecI32 rules[MAX_PAGE];
+    VecI32 page_lists[MAX_PAGE_LIST_COUNT];
 
     memset(rules, 0, sizeof(rules));
     memset(page_lists, 0, sizeof(page_lists));

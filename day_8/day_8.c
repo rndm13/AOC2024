@@ -22,7 +22,7 @@ typedef struct VecPoint {
     (p.x >= 0 && p.x < row_count && p.y >= 0 && p.y < col_count)
 
 size_t count_antinodes(VecPoint* antennas, size_t row_count, size_t col_count, size_t start_diff, size_t diff_count) {
-    hash_table antinodes;
+    HashTable antinodes;
     hash_table_init(&antinodes);
 
     size_t antinode_count = 0;
@@ -96,8 +96,8 @@ int main(int argc, char *argv[]) {
     }
     col_count = strlen(map[0]) - 1; // Except newline
 
-    VecPoint *antennas = malloc(ANTENNA_COUNT * sizeof(vec_i32));
-    memset(antennas, 0, sizeof(vec_i32) * ANTENNA_COUNT);
+    VecPoint *antennas = malloc(ANTENNA_COUNT * sizeof(VecI32));
+    memset(antennas, 0, sizeof(VecI32) * ANTENNA_COUNT);
 
     for (int16_t i = 0; i < row_count; i++) {
         for (int16_t j = 0; j < col_count; j++) {

@@ -38,7 +38,7 @@ int main(void) {
     
     printf("PART 1: %d\n", diff_sum);
 
-    hash_table count_ht_b;
+    HashTable count_ht_b;
     hash_table_init(&count_ht_b);
 
     {
